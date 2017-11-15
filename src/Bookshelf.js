@@ -23,7 +23,7 @@ class BookShelf extends Component{
           <div className="bookshelf-books">
             <ol className="books-grid">
               <li>
-                <Book bookInfo={this.state.allBooks}/>
+                <Book bookInfo={JSON.stringify(this.state.allBooks[0])}/>
               </li>
             </ol>
           </div>
