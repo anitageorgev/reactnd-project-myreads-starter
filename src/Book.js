@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 class Book extends Component{
     static PropTypes = {
         bookInfo: PropTypes.object,
-        onMove: PropTypes.func.isRequired
+        onMove : PropTypes.func.isRequired
     }
     
     state ={
@@ -27,14 +27,17 @@ class Book extends Component{
     }
 
     render(){
+      const { title, authors, imageLink, bookloaded} = this.state
         return(
           <div>            
-            {this.state.bookloaded ? (
+            {bookloaded ? (
               <div className="book">
               <div className="book-top">
-              <div className="book-cover" style={{ width: 128, height: 193,  backgroundImage:`url(${this.state.imageLink})` }}></div>
+              <div className="book-cover" style={{ width: 128, height: 193,  backgroundImage:`url(${imageLink})` }}></div>
                 <div className="book-shelf-changer">
-                  <select >
+                  <select 
+                    value={this.state.selectValue} 
+                    onChange={(e) => this.props.onMove(this.props.bookInfo,e.target.value)} >
                     <option value="none" disabled>Move to...</option>
                     <option value="currentlyReading">Currently Reading</option>
                     <option value="wantToRead">Want to Read</option>
@@ -43,15 +46,12 @@ class Book extends Component{
                   </select>
                 </div>
             </div>
-            <div className="book-title">{this.state.title}</div>
-            <div className="book-authors">{this.state.authors}</div>
+            <div className="book-title">{title}</div>
+            <div className="book-authors">{authors}</div>
             </div>
             ):(
               <div className="book">Could not load book :( </div>
             )}
-             <div className="open-search">
-                  <a onClick={() => this.props.onMove(this.props.bookInfo,'readShelfApi')}>Add a book</a>
-              </div>
           </div>
         )       
     }

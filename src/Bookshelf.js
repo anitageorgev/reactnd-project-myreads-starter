@@ -5,6 +5,7 @@ import Book from './Book'
 class BookShelf extends Component{
   static PropTypes = {
     shelfTitle : PropTypes.string.isRequired,
+    shelfTitleAPI: PropTypes.string.isRequired,
     booksForShelf: PropTypes.object.isRequired,
     onMove : PropTypes.func.isRequired
   } 
@@ -20,7 +21,7 @@ class BookShelf extends Component{
               {
                 booksForShelf.map((singleBookInfo) =>
                 <li key={singleBookInfo.id}><Book onMove={onMove} bookInfo={singleBookInfo}/>
-                <button onClick={() => this.props.onMove(singleBookInfo,'wantToRead')}>Remove</button>
+                {/* <button onClick={() => this.props.onMove(singleBookInfo,'currentlyReading')}>Remove</button> */}
                 </li>
               )
               }

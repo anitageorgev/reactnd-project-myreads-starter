@@ -15,9 +15,9 @@ class BooksApp extends React.Component{
     state = {
         showSearchPage: false,
         apiResultBooks:[],
-        currentlyReadingBooks: '',
-        wantToReadBooks: '',
-        readBooks:'',
+        currentlyReadingBooks: [],
+        wantToReadBooks: [],
+        readBooks:[],
         booksLoaded: false,
         currentMove:''
     }
@@ -45,7 +45,7 @@ class BooksApp extends React.Component{
     }
 
     handleMove =(book, shelf)=>{
-        console.log('book id',book.id)
+        console.log('Moving book: ',book.title, ' to shelf: ', shelf)
         BooksAPI.update(book,shelf)
         .then(()=>{
             this.updateBooksOnShelf()
@@ -77,18 +77,15 @@ class BooksApp extends React.Component{
                         </div>
                         {this.state.booksLoaded ? (
                             <div className="list-books-content">
-                            <Bookshelf onMove={this.handleMove} shelfTitle={currentRead} booksForShelf={currentlyReadingBooks}/>
-                            <Bookshelf onMove={this.handleMove} shelfTitle={wantToRead} booksForShelf={wantToReadBooks}/>
-                            <Bookshelf onMove={this.handleMove} shelfTitle={read} booksForShelf={readBooks}/>
+                            <Bookshelf onMove={this.handleMove} shelfTitle={currentRead} shelfTitleAPI={currentReadShelfApi} booksForShelf={currentlyReadingBooks}/>
+                            <Bookshelf onMove={this.handleMove} shelfTitle={wantToRead} shelfTitleAPI={wantToReadShelfApi} booksForShelf={wantToReadBooks}/>
+                            <Bookshelf onMove={this.handleMove} shelfTitle={read} shelfTitleAPI={readShelfApi} booksForShelf={readBooks}/>
                         </div>
                         ):(
                             <div></div>
                         )}                        
-                        {/* <div className="open-search">
-                            <a onClick={() => this.setState({ showSearchPage: true })}>Add a book</a>
-                        </div> */}
                         <div className="open-search">
-                            <a onClick={() => this.props.onMove(this.props.bookInfo,'readShelfApi')}>Add a book</a>
+                            <a onClick={() => this.setState({ showSearchPage: true })}>Add a book</a>
                         </div>
                     </div>
                 )}
