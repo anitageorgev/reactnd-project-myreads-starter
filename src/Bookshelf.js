@@ -1,31 +1,31 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import * as BooksAPI from './BooksAPI'
 import Book from './Book'
 
 class BookShelf extends Component{
   static PropTypes = {
-    title : PropTypes.string.isRequired
+    shelfTitle : PropTypes.string.isRequired,
+    booksForShelf: PropTypes.object.isRequired,
+    onMove : PropTypes.func.isRequired
   } 
-  state = {
-        allBooks:[]
-  }
-  componentDidMount(){
-      BooksAPI.getAll().then((allBooks) =>{
-          this.setState({allBooks})
-      })
-  }
 
   render(){
+    const {shelfTitle , booksForShelf, onMove } = this.props
       return(
         <div className="bookshelf">
-          <h2 className="bookshelf-title">{this.props.title}</h2>
+          <h2 className="bookshelf-title">{shelfTitle}</h2>
           <div className="bookshelf-books">
-            <ol className="books-grid">
-              <li>
-                <Book bookInfo={JSON.stringify(this.state.allBooks[0])}/>
-              </li>
-            </ol>
+            {booksForShelf != undefined &&
+              <ol className="books-grid">
+              {
+                booksForShelf.map((singleBookInfo) =>
+                <li key={singleBookInfo.id}><Book onMove={onMove} bookInfo={singleBookInfo}/>
+                <button onClick={() => this.props.onMove(singleBookInfo,'wantToRead')}>Remove</button>
+                </li>
+              )
+              }
+              </ol>
+            }
           </div>
         </div>
       )

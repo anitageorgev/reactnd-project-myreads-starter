@@ -1,17 +1,60 @@
 import React from 'react'
-// import * as BooksAPI from './BooksAPI'
+import * as BooksAPI from './BooksAPI'
 import './App.css'
 import Bookshelf from './Bookshelf'
 
 const currentRead = "Currently Reading"
 const wantToRead = "Want to Read"
 const read = "Read"
+const currentReadShelfApi = 'currentlyReading'
+const wantToReadShelfApi = 'wantToRead'
+const readShelfApi = 'read'
+
 
 class BooksApp extends React.Component{
     state = {
         showSearchPage: false,
+        apiResultBooks:[],
+        currentlyReadingBooks: '',
+        wantToReadBooks: '',
+        readBooks:'',
+        booksLoaded: false,
+        currentMove:''
     }
+
+    componentDidMount(){
+        this.updateBooksOnShelf()
+    }
+
+    updateBooksOnShelf(){
+        BooksAPI.getAll().then((apiResultBooks) =>{
+            this.setState({apiResultBooks})
+        }).then(() => {
+          if (typeof this.state.apiResultBooks[0] !== 'undefined')
+          {
+            var filteredcurrentBooks = this.state.apiResultBooks.filter((book)=>book.shelf == currentReadShelfApi)
+            var filteredwantBooks = this.state.apiResultBooks.filter((book)=>book.shelf == wantToReadShelfApi)
+            var filteredreadBooks = this.state.apiResultBooks.filter((book)=>book.shelf == readShelfApi)
+            this.setState({
+                currentlyReadingBooks: JSON.parse(JSON.stringify(filteredcurrentBooks)),
+                wantToReadBooks: JSON.parse(JSON.stringify(filteredwantBooks)),
+                readBooks: JSON.parse(JSON.stringify(filteredreadBooks)),
+                booksLoaded : true
+            })
+          }})
+    }
+
+    handleMove =(book, shelf)=>{
+        console.log('book id',book.id)
+        BooksAPI.update(book,shelf)
+        .then(()=>{
+            this.updateBooksOnShelf()
+        })
+
+    }
+    
     render(){
+        const { currentlyReadingBooks, wantToReadBooks, readBooks} = this.state        
         return(
             <div className="app">
                 {this.state.showSearchPage ? (
@@ -19,14 +62,7 @@ class BooksApp extends React.Component{
                         <div className="search-books-bar">
                         <a className="close-search" onClick={() => this.setState({ showSearchPage: false })}>Close</a>
                         <div className="search-books-input-wrapper">
-                            {/*
-                            NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                            You can find these search terms here:
-                            https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-            
-                            However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                            you don't find a specific author or title. Every search is limited by search terms.
-                            */}
+                            {/* https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md */}
                             <input type="text" placeholder="Search by title or author"/>
                         </div>
                         </div>
@@ -39,13 +75,20 @@ class BooksApp extends React.Component{
                         <div className="list-books-title">
                             <h1>MyReads</h1>
                         </div>
-                        <div className="list-books-content">
-                            <Bookshelf title={currentRead} />
-                            <Bookshelf title={wantToRead} />
-                            <Bookshelf title={read} />
+                        {this.state.booksLoaded ? (
+                            <div className="list-books-content">
+                            <Bookshelf onMove={this.handleMove} shelfTitle={currentRead} booksForShelf={currentlyReadingBooks}/>
+                            <Bookshelf onMove={this.handleMove} shelfTitle={wantToRead} booksForShelf={wantToReadBooks}/>
+                            <Bookshelf onMove={this.handleMove} shelfTitle={read} booksForShelf={readBooks}/>
                         </div>
-                        <div className="open-search">
+                        ):(
+                            <div></div>
+                        )}                        
+                        {/* <div className="open-search">
                             <a onClick={() => this.setState({ showSearchPage: true })}>Add a book</a>
+                        </div> */}
+                        <div className="open-search">
+                            <a onClick={() => this.props.onMove(this.props.bookInfo,'readShelfApi')}>Add a book</a>
                         </div>
                     </div>
                 )}
