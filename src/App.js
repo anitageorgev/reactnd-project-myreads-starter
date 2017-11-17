@@ -2,10 +2,13 @@ import React from 'react'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
 import Bookshelf from './Bookshelf'
+import { Route, Link } from 'react-router-dom'
+import Search from './Search'
 
-const currentRead = "Currently Reading"
-const wantToRead = "Want to Read"
-const read = "Read"
+
+const currentRead = "Eating right now"
+const wantToRead = "Gonna eat this tomorrow"
+const read = "Ate this shi yesterday"
 const currentReadShelfApi = 'currentlyReading'
 const wantToReadShelfApi = 'wantToRead'
 const readShelfApi = 'read'
@@ -19,7 +22,8 @@ class BooksApp extends React.Component{
         wantToReadBooks: [],
         readBooks:[],
         booksLoaded: false,
-        currentMove:''
+        currentMove:'',
+        searchedBooks:[]
     }
 
     componentDidMount(){
@@ -52,43 +56,43 @@ class BooksApp extends React.Component{
         })
 
     }
-    
+
+    searchBooks =(query)=>{
+        console.log( 'seraching for :' , query)
+        BooksAPI.search(query,15)
+        .then((e)=>{
+            this.setState({
+                searchedBooks: JSON.parse(JSON.stringify(e))
+            })
+        })
+    }
+
     render(){
-        const { currentlyReadingBooks, wantToReadBooks, readBooks} = this.state        
+        const { currentlyReadingBooks, wantToReadBooks, readBooks, searchedBooks} = this.state        
         return(
             <div className="app">
-                {this.state.showSearchPage ? (
-                    <div className="search-books">
-                        <div className="search-books-bar">
-                        <a className="close-search" onClick={() => this.setState({ showSearchPage: false })}>Close</a>
-                        <div className="search-books-input-wrapper">
-                            {/* https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md */}
-                            <input type="text" placeholder="Search by title or author"/>
-                        </div>
-                        </div>
-                        <div className="search-books-results">
-                            <ol className="books-grid"></ol>
-                        </div>
-                    </div>
-                ) : (
+                <Route exact path='/' render={() =>(
                     <div className="list-books">
-                        <div className="list-books-title">
-                            <h1>MyReads</h1>
-                        </div>
-                        {this.state.booksLoaded ? (
-                            <div className="list-books-content">
+                    <div className="list-books-title">
+                        <h1>Wanna Banana?</h1>
+                    </div>
+                    {this.state.booksLoaded ? (
+                        <div className="list-books-content">
                             <Bookshelf onMove={this.handleMove} shelfTitle={currentRead} shelfTitleAPI={currentReadShelfApi} booksForShelf={currentlyReadingBooks}/>
                             <Bookshelf onMove={this.handleMove} shelfTitle={wantToRead} shelfTitleAPI={wantToReadShelfApi} booksForShelf={wantToReadBooks}/>
                             <Bookshelf onMove={this.handleMove} shelfTitle={read} shelfTitleAPI={readShelfApi} booksForShelf={readBooks}/>
                         </div>
-                        ):(
-                            <div></div>
-                        )}                        
-                        <div className="open-search">
-                            <a onClick={() => this.setState({ showSearchPage: true })}>Add a book</a>
-                        </div>
+                    ):(
+                        <div></div>
+                    )}                        
+                    <div className="open-search" >
+                        <Link to='/search' className='add-contact'>Add a book</Link>
                     </div>
-                )}
+                </div>
+                )}/>
+                <Route path='/search' render={({history}) =>(
+                   <Search onSearch={this.searchBooks} searchedBooks={searchedBooks} onMove={this.handleMove}/>
+                )}/>
             </div>
         )        
     }

@@ -20,10 +20,10 @@ class BookShelf extends Component{
               <ol className="books-grid">
               {
                 booksForShelf.map((singleBookInfo) =>
-                <li key={singleBookInfo.id}><Book onMove={onMove} bookInfo={singleBookInfo}/>
-                {/* <button onClick={() => this.props.onMove(singleBookInfo,'currentlyReading')}>Remove</button> */}
+                <li key={singleBookInfo.id}>
+                  <Book onMove={onMove} bookInfo={singleBookInfo}/>
                 </li>
-              )
+                )
               }
               </ol>
             }
