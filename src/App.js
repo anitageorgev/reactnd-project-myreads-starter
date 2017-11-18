@@ -13,6 +13,7 @@ const currentReadShelfApi = 'currentlyReading'
 const wantToReadShelfApi = 'wantToRead'
 const readShelfApi = 'read'
 
+// link to Git repo: https://github.com/anitageorgev/reactnd-project-myreads-starter.git
 
 class BooksApp extends React.Component{
     state = {
