@@ -59,13 +59,22 @@ class BooksApp extends React.Component{
     }
 
     searchBooks =(query)=>{
-        console.log( 'seraching for :' , query)
-        BooksAPI.search(query,15)
-        .then((e)=>{
-            this.setState({
-                searchedBooks: JSON.parse(JSON.stringify(e))
+        if(query != null && query.trim() !== ''){
+            console.log( 'seraching for :' , query)
+            BooksAPI.search(query,15)
+            .then((e)=>{
+                this.setState({
+                    searchedBooks: JSON.parse(JSON.stringify(e))
+                })
             })
-        })
+        }
+        else{
+            console.log('got empty value for search:', query)
+            this.setState({
+                searchedBooks: []
+            })
+        }
+       
     }
 
     render(){
