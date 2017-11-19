@@ -59,21 +59,38 @@ class BooksApp extends React.Component{
     }
 
     searchBooks =(query)=>{
-        if(query != null && query.trim() !== ''){
-            console.log( 'seraching for :' , query)
-            BooksAPI.search(query,15)
-            .then((e)=>{
-                this.setState({
-                    searchedBooks: JSON.parse(JSON.stringify(e))
+        this.setState({
+            searchedBooks : []
+        }, () =>
+        {
+            if(query != null && query.trim() !== ''){
+                console.log( 'seraching for :' , query)
+                var finalBooks
+                BooksAPI.search(query,15)
+                .then((searchResult)=>{
+                    if(searchResult)
+                    {
+                        this.setState(() =>{
+                            finalBooks = searchResult.map((searchedBook) => {
+                                const booksOnShelf = this.state.currentlyReadingBooks.concat(this.state.wantToReadBooks).concat(this.state.readBooks)                        
+                                const overlapBook = booksOnShelf.find((book)=> book.id === searchedBook.id)
+                                console.log('overlap', overlapBook)
+                                if(overlapBook){
+                                    searchedBook.shelf = overlapBook.shelf
+                                }
+                                else {
+                                    searchedBook.shelf = "none"
+                                }
+                                return searchedBook
+                            });
+                            return {searchedBooks : finalBooks}
+                        })
+                    }
                 })
-            })
-        }
-        else{
-            console.log('got empty value for search:', query)
-            this.setState({
-                searchedBooks: []
-            })
-        }
+            }
+        })
+
+        
        
     }
 
